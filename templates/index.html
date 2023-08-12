@@ -1,0 +1,42 @@
+<!doctype html>
+<title>Server Send Events Demo</title>
+<style>
+  .center {
+    text-align: center;
+  }
+  .parent {
+      position: relative;
+      height: 95vh;
+  }
+  .bottom {
+      position: absolute;
+      bottom: 0;
+  }
+  body {
+      min-height: 100%;
+  }
+</style>
+<script src="http://code.jquery.com/jquery-latest.js"></script>
+<script>
+if (!!window.EventSource) {
+  var source = new EventSource('/');
+  console.log(source);
+  source.onmessage = function(e) {
+    console.log(e);
+    var blaat = JSON.parse(e.data);
+    $("#data").text(blaat.data);
+    $("#errors").text("errors in the last hour: " + blaat.errors);
+  }
+}
+</script>
+<div class=center id="data">
+    No data received yet
+</div>
+<div class=center id="errors">
+    errors in the last hour: 0
+</div>
+<div class=parent>
+    <div class=bottom>
+        Version: {{version}}
+    </div>
+</div>
