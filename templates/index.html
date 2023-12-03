@@ -1,5 +1,5 @@
 <!doctype html>
-<title>Server Send Events Demo</title>
+<title>Eelco Garage Monitor</title>
 <style>
   .center {
     text-align: center;
@@ -10,33 +10,56 @@
   }
   .bottom {
       position: absolute;
-      bottom: 0;
+      bottom: 10vh;
   }
   body {
       min-height: 100%;
   }
+  .wrapper {
+      width: 80%
+      margin: 24px auto;
+      text-align: center;
+  }
+  .canvas {
+      border: 1px solid black;
+  }
 </style>
+
+
 <script src="http://code.jquery.com/jquery-latest.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="{{url_for('static', filename='chartjs_line.js')}}"></script>
+
+
+
 <script>
 if (!!window.EventSource) {
   var source = new EventSource('/');
   console.log(source);
   source.onmessage = function(e) {
-    console.log(e);
     var blaat = JSON.parse(e.data);
+    console.log(blaat);
     $("#data").text(blaat.data);
     $("#errors").text("errors in the last hour: " + blaat.errors);
+    updateFunction(blaat);
   }
 }
 </script>
+
+
 <div class=center id="data">
     No data received yet
 </div>
 <div class=center id="errors">
     errors in the last hour: 0
 </div>
+<div class=wrapper>
+    <h1>Temperature</h1>
+    <canvas id="temp" class=canvas width=400 height=400></canvas>
+</div>
 <div class=parent>
     <div class=bottom>
-        Version: {{version}}
+        Version: {{version}}<br>
+        Refresh rate: 5s
     </div>
 </div>

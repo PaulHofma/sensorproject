@@ -44,7 +44,12 @@ def getReadout():
         if(temperature == 25.5 and humidity == 25.5):
             print("Bad data, skipping")
             return "???"
-        return "Temp: {:.1f}*C, Humidity: {:.1f}%".format(temperature, humidity)
+        returnVal = {
+            'printable': "Temp: {:.1f}*C, Humidity: {:.1f}%".format(temperature, humidity),
+            'tmp': temperature,
+            'hmd': humidity
+            }
+        return returnVal
     
     except RuntimeError as e:
         #GPIO access may require sudo permissions

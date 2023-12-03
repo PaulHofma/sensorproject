@@ -21,10 +21,18 @@ def index():
     if request.headers.get('accept') == 'text/event-stream':
         def events():
             FAIL_COUNTER = []
+            TEMP = []
+            HMD = []
+            TIME = []
             for _ in enumerate(itertools.count()):
-                x = getReadout()
-                if(x != ""):
-                    yield 'data: {"data": "%s (%s)", "errors": %d}\n\n' % (getReadout(), time.strftime("%y%m%d %H:%M:%S", time.localtime()), len(FAIL_COUNTER))
+                result = getReadout()
+                if(result != ""):
+                    data_update(TEMP, result['tmp'])
+                    data_update(HMD, result['hmd'])
+                    data_update(TIME, time.time())
+                    yield 'data: {"data": "%s (%s)", "errors": %d, "tmp": %s, "hmd":%s, "timestamp":%s}\n\n' % (
+                        result['printable'], time.strftime("%y%m%d %H:%M:%S", time.localtime()), len(FAIL_COUNTER), result['tmp'], result['hmd'], time.time()
+                        )
                 else:
                     FAIL_COUNTER.append(time.time())
                     yield 'data: {"errors": %d}\n\n' % len(FAIL_COUNTER)
@@ -32,3 +40,11 @@ def index():
                 time.sleep(5.0)
         return Response(events(), content_type='text/event-stream')
     return render_template('index.html', version=VERSION)
+
+
+def data_update(data_in, val):
+    if(len(data_in) <=10000):
+        data_in = data_in.append(val)
+    else:
+        data_in = data_in.append(val)[1:]
+        
