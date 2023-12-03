@@ -32,17 +32,15 @@ document.addEventListener('DOMContentLoaded', function(event) {
 }); 
 
 function updateFunction(inputObj) {
-    var chart = Chart.getChart('temp');
+    var tempchart = Chart.getChart('temp');
     console.log('updating: ', inputObj.tmp);
     console.log(temperatureData);
     var newTemp = inputObj.tmp;
     var newHmd = inputObj.hmd;
     var newTime = inputObj.timestamp;
     if(newTemp && newHmd && newTime) {
-        chart.data.datasets[0].data.shift();
-        chart.data.datasets[0].data.push(newTemp);
-        chart.data.labels.shift();
-        chart.data.labels.push(newTime);
+        tempchart.data.datasets[0].data = newTemp;
+        tempchart.data.labels = newTime;
     }
-    chart.update();
+    tempchart.update();
 }

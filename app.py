@@ -7,6 +7,10 @@ from sensors import getReadout
 app = Flask(__name__)
 VERSION = "0.1.0"
 
+FAIL_COUNTER = []
+TEMP = []
+HMD = []
+TIME = []
 
 @app.route("/health")
 def health():
@@ -20,10 +24,10 @@ def version():
 def index():
     if request.headers.get('accept') == 'text/event-stream':
         def events():
-            FAIL_COUNTER = []
-            TEMP = []
-            HMD = []
-            TIME = []
+            global TEMP
+            global HMD
+            global TIME
+            global FAIL_COUNTER
             for _ in enumerate(itertools.count()):
                 result = getReadout()
                 if(result != ""):
@@ -31,7 +35,7 @@ def index():
                     data_update(HMD, result['hmd'])
                     data_update(TIME, time.time())
                     yield 'data: {"data": "%s (%s)", "errors": %d, "tmp": %s, "hmd":%s, "timestamp":%s}\n\n' % (
-                        result['printable'], time.strftime("%y%m%d %H:%M:%S", time.localtime()), len(FAIL_COUNTER), result['tmp'], result['hmd'], time.time()
+                        result['printable'], time.strftime("%y%m%d %H:%M:%S", time.localtime()), len(FAIL_COUNTER), TEMP, HMD, TIME
                         )
                 else:
                     FAIL_COUNTER.append(time.time())
