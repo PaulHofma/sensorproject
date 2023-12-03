@@ -35,7 +35,7 @@ def index():
                     data_update(HMD, result['hmd'])
                     data_update(TIME, time.time())
                     yield 'data: {"data": "%s (%s)", "errors": %d, "tmp": %s, "hmd":%s, "timestamp":%s}\n\n' % (
-                        result['printable'], time.strftime("%y%m%d %H:%M:%S", time.localtime()), len(FAIL_COUNTER), TEMP, HMD, TIME
+                        result['printable'], time.strftime("%y%m%d %H:%M:%S", time.localtime()), len(FAIL_COUNTER), TEMP, HMD, [i * 1000 for i in TIME]
                         )
                 else:
                     FAIL_COUNTER.append(time.time())

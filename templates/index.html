@@ -28,6 +28,8 @@
 
 <script src="http://code.jquery.com/jquery-latest.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/date-fns/1.30.1/date_fns.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
 <script src="{{url_for('static', filename='chartjs_line.js')}}"></script>
 
 
@@ -56,6 +58,10 @@ if (!!window.EventSource) {
 <div class=wrapper>
     <h1>Temperature</h1>
     <canvas id="temp" class=canvas></canvas>
+</div>
+<div class=wrapper>
+    <h1>Humidity</h1>
+    <canvas id="hmd" class=canvas></canvas>
 </div>
 <div class=parent>
     <div class=bottom>
