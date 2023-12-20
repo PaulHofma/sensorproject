@@ -62,6 +62,7 @@ def getReadout():
     except Exception as error:
         #dhtDevice.exit()
         #raise error
+        print(error)
         print(f"BIG Error, trying to recover but may fail")
         #print("GPIO Access may need sudo permissions.")
         return ""
