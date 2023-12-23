@@ -6,11 +6,12 @@ import adafruit_dht as dht
 
 
 # connected on pin 18 - change as appropriate.
-dhtDevice = dht.DHT22(board.D18)
+# dhtDevice = dht.DHT22(board.D18)
 
 # Run as application
 def main():
     print('starting...')
+    dhtDevice = dht.DHT22(board.D18)
     while True:
         try:
             temperature = dhtDevice.temperature
@@ -37,10 +38,12 @@ def main():
         
 
 # Does a single read operation  
-def getReadout():
+def getReadout(dhtDevice):
     try:
+        print('start getReadout')
         temperature = dhtDevice.temperature
         humidity = dhtDevice.humidity
+        print('got results')
         if(temperature == 25.5 and humidity == 25.5):
             print("Bad data, skipping")
             return ""

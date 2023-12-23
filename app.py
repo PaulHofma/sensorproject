@@ -12,7 +12,7 @@ def create_app(announcer):
 
     @app.route("/health")
     def health():
-        return ("", HTTPStatus.NO_CONTENT)
+        return ("server ok", HTTPStatus.OK)
 
     @app.route("/version")
     def version():
@@ -20,22 +20,20 @@ def create_app(announcer):
 
     @app.route("/")
     def index():
-        print('hi?')
+        print('getting page')
         globalAnnouncer = current_app.config['ANNOUNCER']
-        print(type(globalAnnouncer))
         if request.headers.get('accept') == 'text/event-stream':
             def stream():
-                messages = globalAnnouncer.listen()
+                messageQueue = globalAnnouncer.listen()
                 print('listening: ' + str(globalAnnouncer))
+                print(globalAnnouncer.listeners)
                 while True:
-                    msg = messages.get()
+                    msg = messageQueue.get()
                     print('got one!')
                     yield msg
                     
             return Response(stream(), content_type='text/event-stream')
         return render_template('index.html', version=VERSION)
+    
     return app
-
-if __name__ == "__main__":
-    create_app(MessageAnnouncer()).run
 
