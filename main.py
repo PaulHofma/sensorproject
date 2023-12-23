@@ -46,7 +46,8 @@ class MessageAnnouncer:
                 
 class DataCollector:
     
-    def __init__(self, temp_arr, hmd_arr, time_arr, fail_arr, announcer, debug = False):
+    def __init__(self, temp_arr, hmd_arr, time_arr, fail_arr,
+                 announcer, debug = False, rate=5.0):
         print("application starting!")
         
         self.temp_arr = temp_arr
@@ -83,7 +84,7 @@ class DataCollector:
             if self.debug:
                 print('sleeping')
             
-            time.sleep(5.0)
+            time.sleep(rate)
             
     def terminate(self):
         print('Terminating DataCollector...')
