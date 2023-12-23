@@ -13,7 +13,8 @@ Group=eelco
 # see http://0pointer.net/blog/dynamic-users-with-systemd.html
 RuntimeDirectory=gunicorn
 WorkingDirectory=/home/eelco/Developer/sensorpage
-ExecStart=/usr/bin/gunicorn wsgi
+Environment="PATH=/home/eelco/.virtualenvs/sensors/bin"
+ExecStart=/home/eelco/.virtualenvs/sensors/bin/gunicorn wsgi --threads 4
 ExecReload=/bin/kill -s HUP $MAINPID
 KillMode=mixed
 TimeoutStopSec=5

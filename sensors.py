@@ -39,11 +39,10 @@ def main():
 
 # Does a single read operation  
 def getReadout(dhtDevice):
+    print('ping')
     try:
-        print('start getReadout')
         temperature = dhtDevice.temperature
         humidity = dhtDevice.humidity
-        print('got results')
         if(temperature == 25.5 and humidity == 25.5):
             print("Bad data, skipping")
             return ""

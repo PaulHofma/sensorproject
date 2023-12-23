@@ -11,11 +11,12 @@ import signal
 
 class MessageAnnouncer:
 
-    def __init__(self):
+    def __init__(self, debug = False):
         print('initializing announcer')
         self.listeners = []
         self.name = str(random.randint(0,999))
         self.lock = Lock()
+        self.debug = debug
         
     def __str__(self):
         return F"announcer (name: {self.name}, listeners: {len(self.listeners)})"
@@ -24,24 +25,28 @@ class MessageAnnouncer:
         with self.lock:
             q = queue.Queue(maxsize=5)
             self.listeners.append(q)
-            print('add listener, new length:' + str(self))
+            if self.debug:
+                print('add listener, new length:' + str(self))
         return q
     
     def announce(self, msg):
         with self.lock:
-            print(F'announcing datapoint, listener length: {str(len(self.listeners))}')
-            print(self.listeners)
+            if self.debug:
+                print(F'announcing datapoint, listener length: {str(len(self.listeners))}')
+                print(self.listeners)
             for i in reversed(range(len(self.listeners))):
                 try:
-                    print('msg: ' + msg)
+                    if self.debug:
+                        print('msg: ' + msg)
                     self.listeners[i].put_nowait(msg)
                 except queue.Full:
-                    print('killing a listener')
+                    if self.debug:
+                        print('killing a listener')
                     del self.listeners[i]
                 
 class DataCollector:
     
-    def __init__(self, temp_arr, hmd_arr, time_arr, fail_arr, announcer):
+    def __init__(self, temp_arr, hmd_arr, time_arr, fail_arr, announcer, debug = False):
         print("application starting!")
         
         self.temp_arr = temp_arr
@@ -49,25 +54,35 @@ class DataCollector:
         self.time_arr = time_arr
         self.fail_arr = fail_arr
         self.announcer = announcer
+        self.debug = debug
         
         self.dhtDevice = DHT22(board.D18)
         self.stop_event = Event()
         print(F"started with announcer: {self.announcer}")
-        print(self.dhtDevice.temperature)
-        print(F'dummy read: {self.get_data()}')
 
     def main_process(self):
         for _ in enumerate(itertools.count()):
-            print(time.time())
-            print(F'{str(self)} stopping: {self.stop_event.is_set()}')
+            
+            if self.debug:
+                print(F'{str(self)} stopping: {self.stop_event.is_set()}')
             if(self.stop_event.is_set()):
+                print(f'stop event set! breaking...')
                 break
-            print('ping:' + str(self.announcer))
+            
+            if self.debug:
+                print('ping:' + str(self.announcer))
+            
             result = self.get_data()
-            print('got data')
+            
+            if self.debug:
+                print('got data')
+            
             self.announcer.announce(result)
             self.fail_arr = [x for x in self.fail_arr if (x+3600) > time.time()]
-            print('sleeping')
+            
+            if self.debug:
+                print('sleeping')
+            
             time.sleep(5.0)
             
     def terminate(self):
@@ -77,9 +92,14 @@ class DataCollector:
         time.sleep(0.5)
         
     def get_data(self):
-        print('start get data')
+        if self.debug:
+            print('start get data')
+        
         result = getReadout(self.dhtDevice)
-        print(F'got readout: {result}')
+        
+        if self.debug:
+            print(F'got readout: {result}')
+        
         if(result != "" and result != []):
             self.data_update(self.temp_arr, result['tmp'])
             self.data_update(self.hmd_arr, result['hmd'])

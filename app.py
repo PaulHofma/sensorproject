@@ -24,13 +24,22 @@ def create_app(announcer):
         globalAnnouncer = current_app.config['ANNOUNCER']
         if request.headers.get('accept') == 'text/event-stream':
             def stream():
+                live = True
                 messageQueue = globalAnnouncer.listen()
-                print('listening: ' + str(globalAnnouncer))
-                print(globalAnnouncer.listeners)
-                while True:
-                    msg = messageQueue.get()
-                    print('got one!')
-                    yield msg
+                if(app.debug):
+                    print('listening: ' + str(globalAnnouncer))
+                    print(globalAnnouncer.listeners)
+                while live:
+                    try:
+                        msg = messageQueue.get(timeout=11)
+                        if(app.debug):
+                            print('got one!')
+                        yield msg
+                    except Exception as error:
+                        live = False
+                        yield ""
+                        
+                        
                     
             return Response(stream(), content_type='text/event-stream')
         return render_template('index.html', version=VERSION)

@@ -1,5 +1,5 @@
-var timestamps = [1700, 1750, 1800, 1850, 1900, 1950, 2000, 2050];
-var dummyData = [106, 106, 107, 111, 133, 221, 783, 2478];
+var timestamps = [];
+var dummyData = [];
 
 var temperatureChartInput = {
     labels: timestamps,

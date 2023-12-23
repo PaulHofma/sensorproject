@@ -18,7 +18,6 @@ def background():
     global dataCollector
     print('start background process...')
     dataCollector.main_process()
-    print('should not get here')
     return
 
 mp = threading.Thread(name='bg', target=background)
@@ -27,11 +26,10 @@ mp.start()
 def close_threads(a=0, b=0):
     print('shutting down threads and stopping process...')
     dataCollector.terminate()
-    print(f'stop event set to: {dataCollector.stop_event.is_set()}, joining threads...')
     if mp.is_alive():
         mp.join(10)
     if mp.is_alive():
-        mp.kill()
+        mp.terminate()
         mp.join()
     print('done!')
     raise Exception("get outta here.")
