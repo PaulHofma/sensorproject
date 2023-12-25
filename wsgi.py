@@ -1,11 +1,17 @@
 from app import create_app
 from main import MessageAnnouncer, DataCollector
+from plugs import PlugController
 import threading
 import atexit
 import signal
 
+tapo_username = "paul_hofma@hotmail.com"
+tapo_password = "eelcopi7"
+tapo_ip = "192.168.178.95"
+
 ANNOUNCER = MessageAnnouncer()
-application = create_app(ANNOUNCER)
+CONTROLLER = PlugController(tapo_username, tapo_password, tapo_ip)
+application = create_app(ANNOUNCER, CONTROLLER)
 
 print(f"application master starting up, should run only once...") 
 FAIL_COUNTER = []

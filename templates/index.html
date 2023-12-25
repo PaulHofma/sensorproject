@@ -23,6 +23,24 @@
   .canvas {
       border: 1px solid black;
   }
+  .button {
+      padding: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      display: inline-block;
+  }
+  .button-wrapper {
+      margin-top: 8px;
+  }
+  .circle {
+      width: 24px;
+      height: 24px;
+      margin-left: 10px;
+      border-radius: 50%;
+      border: 1px solid black;
+      display: inline-block;
+      vertical-align: middle;
+  }
 </style>
 
 
@@ -31,8 +49,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/date-fns/1.30.1/date_fns.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
 <script src="{{url_for('static', filename='chartjs_line.js')}}"></script>
-
-
 
 <script>
 if (!!window.EventSource) {
@@ -48,12 +64,19 @@ if (!!window.EventSource) {
 }
 </script>
 
-
 <div class=center id="data">
     No data received yet
 </div>
 <div class=center id="errors">
     errors in the last hour: 0
+</div>
+<div class="center button-wrapper">
+    <button class=button id="toggleButtonTmp">Toggle Heater on/off</button>
+    <div id=tmpcircle class=circle></div>
+</div>
+<div class="center button-wrapper">
+    <button class=button id="toggleButtonHmd">Toggle De-humidifier on/off</button>
+    <div id=hmdcircle class=circle></div>
 </div>
 <div class=wrapper>
     <h1>Temperature</h1>
@@ -69,3 +92,88 @@ if (!!window.EventSource) {
         Refresh rate: 5s
     </div>
 </div>
+
+<script>
+    fetch('/get-state', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ 'plug_number': 1})
+    })
+    .then(r => r.json())
+    .then(r => {
+        var color;
+        if (r.status) {
+            color = 'green';
+        } else {
+            color = 'red';
+        }
+        document.getElementById('tmpcircle').style.backgroundColor = color;
+    })
+    .catch(e => {
+        alert('an issue occured getting state for TMP regulator. Check logs for details.')
+        console.error('Error: ', e)
+    });
+    
+    fetch('/get-state', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ 'plug_number': 2})
+    })
+    .then(r => r.json())
+    .then(r => {
+        var color;
+        if (r.status) {
+            color = 'green';
+        } else {
+            color = 'red';
+        }
+        document.getElementById('tmpcircle').style.backgroundColor = color;
+    })
+    .catch(e => {
+        alert('an issue occured getting state for HMD regulator. Check logs for details.')
+        console.error('Error: ', e)
+    });
+    
+</script>
+
+<script>
+    document.getElementById('toggleButtonTmp').addEventListener('click', function() {
+        var plugnumber = 1;
+        fetch('/toggle', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ 'plug_number': plugnumber})
+        })
+        .then(r => r.json())
+        .then(r => {
+            var color;
+            if (r.status) {
+                color = 'green';
+            } else {
+                color = 'red';
+            }
+            document.getElementById('tmpcircle').style.backgroundColor = color;
+        })
+        .catch(e => console.error('Error: ', e)); 
+    });
+    
+    document.getElementById('toggleButtonHmd').addEventListener('click', function() {
+        var plugnumber = 2;
+        fetch('/toggle', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ 'plug_number': plugnumber})
+        })
+        .then(r => r.json())
+        .then(r => {
+            var color;
+            if (r.status) {
+                color = 'green';
+            } else {
+                color = 'red';
+            }
+            document.getElementById('hmdcircle').style.backgroundColor = color;
+        })
+        .catch(e => console.error('Error: ', e)); 
+    });
+</script>

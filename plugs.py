@@ -69,10 +69,10 @@ class PlugController:
         print(f"state pre-toggle: {is_on}")
         if is_on:
             await self.off(plug_number)
-            return True
+            return False
         else:
             await self.on(plug_number)
-            return False
+            return True
         
         
 async def test():
@@ -98,14 +98,15 @@ async def test():
     d_usage = await device.get_device_usage()
     print(f"Device usage: {d_usage.to_dict()}")
     
-async def test2(pc):
-    print(await pc.toggle(1))
-    print(await pc.info(1))
 
 if __name__ == "__main__":
     tapo_username = "paul_hofma@hotmail.com"
     tapo_password = "eelcopi7"
     tapo_ip = "192.168.178.95"
+    
+    async def test2(pc):
+        print(await pc.toggle(1))
+        print(await pc.info(1))
     
     pc = PlugController(tapo_username, tapo_password, tapo_ip)
     asyncio.run(test2(pc))

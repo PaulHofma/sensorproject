@@ -1,6 +1,7 @@
 import itertools
 from flask import Flask, Response, redirect, request, url_for, render_template, current_app, jsonify
 from http import HTTPStatus
+import asyncio
 
 VERSION = "0.1.0"
 
@@ -44,9 +45,32 @@ def create_app(announcer, plugController):
     
     
     @app.route("/toggle", methods=["POST"])
-    def manual_toggle(plug_number):
+    def manual_toggle():
+        print("toggle!")
         pc = current_app.config['CONTROLLER']
-        res = pc.toggle(plug_number)
+        
+        request_data = request.get_json()
+        plug_number = request_data.get('plug_number')
+        
+        if plug_number is None:
+            return jsonify({"error": "Missing 'plug_number' in the request body"}), 400
+        
+        res = asyncio.run(pc.toggle(plug_number))
+        response_data = {"status": res}
+        return jsonify(response_data)
+    
+    @app.route("/get-state", methods=["POST"])
+    def get_state():
+        print("ison!")
+        pc = current_app.config['CONTROLLER']
+        
+        request_data = request.get_json()
+        plug_number = request_data.get('plug_number')
+        
+        if plug_number is None:
+            return jsonify({"error": "Missing 'plug_number' in the request body"}), 400
+        
+        res = asyncio.run(pc.is_on(plug_number))
         response_data = {"status": res}
         return jsonify(response_data)
     
