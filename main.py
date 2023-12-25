@@ -56,6 +56,7 @@ class DataCollector:
         self.fail_arr = fail_arr
         self.announcer = announcer
         self.debug = debug
+        self.rate = rate
         
         self.dhtDevice = DHT22(board.D18)
         self.stop_event = Event()
@@ -84,7 +85,7 @@ class DataCollector:
             if self.debug:
                 print('sleeping')
             
-            time.sleep(rate)
+            time.sleep(self.rate)
             
     def terminate(self):
         print('Terminating DataCollector...')
