@@ -1,14 +1,15 @@
 import itertools
-from flask import Flask, Response, redirect, request, url_for, render_template, current_app
+from flask import Flask, Response, redirect, request, url_for, render_template, current_app, jsonify
 from http import HTTPStatus
 
 VERSION = "0.1.0"
 
-def create_app(announcer):
+def create_app(announcer, plugController):
     global VERSION
     
     app = Flask(__name__)
     app.config['ANNOUNCER'] = announcer
+    app.config['CONTROLLER'] = plugController
 
     @app.route("/health")
     def health():
@@ -16,7 +17,7 @@ def create_app(announcer):
 
     @app.route("/version")
     def version():
-        return VERSION    
+        return VERSION
 
     @app.route("/")
     def index():
@@ -38,11 +39,17 @@ def create_app(announcer):
                     except Exception as error:
                         live = False
                         yield ""
-                        
-                        
-                    
             return Response(stream(), content_type='text/event-stream')
         return render_template('index.html', version=VERSION)
+    
+    
+    @app.route("/toggle", methods=["POST"])
+    def manual_toggle(plug_number):
+        pc = current_app.config['CONTROLLER']
+        res = pc.toggle(plug_number)
+        response_data = {"status": res}
+        return jsonify(response_data)
+    
     
     return app
 
